@@ -14,10 +14,10 @@ import (
 	"github.com/mustanish/jwtAPI/models"
 	userRequest "github.com/mustanish/jwtAPI/request/user"
 	"github.com/mustanish/jwtAPI/response"
-	"github.com/twinj/uuid"
+	"github.com/myesui/uuid"
 )
 
-// Authorize is used to authorize to use our application
+// Authorize is used to authorize a user to use our application Implement Diffie-Hellman
 func Authorize(res http.ResponseWriter, req *http.Request) {
 
 	var (
@@ -69,6 +69,10 @@ func Authorize(res http.ResponseWriter, req *http.Request) {
 	successResponse.Code = http.StatusOK
 	successResponse.Data = response
 	helpers.SetResponse(res, http.StatusOK, successResponse)
+}
+
+// Authenticate is used to register/login to our application
+func Authenticate(res http.ResponseWriter, req *http.Request) {
 }
 
 // Verify is used to verify OTP
@@ -126,20 +130,14 @@ func Verify(res http.ResponseWriter, req *http.Request) {
 	helpers.SetResponse(res, http.StatusOK, successResponse)
 }
 
+// Resend is used to send OTP via email/sms
 func Resend(res http.ResponseWriter, req *http.Request) {
-	/*var (
-		//identity  = regexp.MustCompile("^" + config.EmailRegex + "$")
-		authorize userRequest.Authorize
-		//error     error
-	)
-	err := json.NewDecoder(req.Body).Decode(&authorize)
-	log.Println(err)*/
 }
 
+// ReadDetail is used to fetch detail of requested user
 func ReadDetail(res http.ResponseWriter, req *http.Request) {
-	//userName := mux.Vars(req)
 }
 
+// UpdateDetail is used to update detail of requested user
 func UpdateDetail(res http.ResponseWriter, req *http.Request) {
-
 }
