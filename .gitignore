@@ -1,6 +1,4 @@
 tests/*
 logs/*
 vendor/*
-Gopkg.lock
-Gopkg.toml
 .env
