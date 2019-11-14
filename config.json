@@ -1,29 +1,26 @@
 {
-	"development": {
-		"port": "8080",
-		"dbhost": "localhost",
-		"dbport": "3306",
-		"dbname": "assignment",
-		"dbuser": "root",
-		"dbpassword": "altu123",
-		"jwtsecret": "mYq3t6w9z$C&F)J@NcRfUjXn2r4u7x!A%D*G-KaPdSgVkYp3s6v8y/B?E(H+MbQeThWmZq4t7w!z$C&F)J@NcRfUjXn2r5u8x/A?D*G-KaPdSgVkYp3s6v9y$B&E)H+M"
-	},
-	"staging": {
-		"port": "8080",
-		"dbhost": "localhost",
-		"dbport": "3306",
-		"dbname": "assignment",
-		"dbuser": "root",
-		"dbpassword": "altu123",
-		"jwtsecret": "mYq3t6w9z$C&F)J@NcRfUjXn2r4u7x!A%D*G-KaPdSgVkYp3s6v8y/B?E(H+MbQeThWmZq4t7w!z$C&F)J@NcRfUjXn2r5u8x/A?D*G-KaPdSgVkYp3s6v9y$B&E)H+M"
-	},
-	"production": {
-		"port": "8080",
-		"dbhost": "localhost",
-		"dbport": "3306",
-		"dbname": "assignment",
-		"dbuser": "root",
-		"dbpassword": "altu123",
-		"jwtsecret": "mYq3t6w9z$C&F)J@NcRfUjXn2r4u7x!A%D*G-KaPdSgVkYp3s6v8y/B?E(H+MbQeThWmZq4t7w!z$C&F)J@NcRfUjXn2r5u8x/A?D*G-KaPdSgVkYp3s6v9y$B&E)H+M"
-	}
+  "development": {
+    "port": "8080",
+    "dbhost": "localhost",
+    "dbport": "3306",
+    "dbname": "assignment",
+    "dbuser": "root",
+    "dbpassword": "altu123"
+  },
+  "staging": {
+    "port": "8080",
+    "dbhost": "localhost",
+    "dbport": "3306",
+    "dbname": "assignment",
+    "dbuser": "root",
+    "dbpassword": "altu123"
+  },
+  "production": {
+    "port": "8080",
+    "dbhost": "localhost",
+    "dbport": "3306",
+    "dbname": "assignment",
+    "dbuser": "root",
+    "dbpassword": "altu123"
+  }
 }

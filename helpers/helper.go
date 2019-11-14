@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"bytes"
+	"context"
 	"crypto/rand"
 	"encoding/json"
 	"io"
@@ -11,8 +12,13 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"time"
+
+	"github.com/dgrijalva/jwt-go"
+	"github.com/mustanish/jwtAPI/config"
+	"github.com/mustanish/jwtAPI/response"
 )
 
 type logger struct {
@@ -23,6 +29,11 @@ type logger struct {
 	ResponseCode    int         `json:"responseCode"`
 	ResponseHeaders interface{} `json:"responseHeaders"`
 	ResponseBody    interface{} `json:"responseBody"`
+}
+
+type Claims struct {
+	ID uint `json:"ID"`
+	jwt.StandardClaims
 }
 
 // Logger is used to log every request being served
@@ -51,16 +62,46 @@ func Logger(next http.HandlerFunc) http.HandlerFunc {
 	})
 }
 
+// GenerateToken is used to generate access token
+func GenerateToken(ID uint) (string, error) {
+	claims := &Claims{
+		ID: ID,
+		StandardClaims: jwt.StandardClaims{
+			IssuedAt:  time.Now().Unix(),
+			ExpiresAt: time.Now().Add(30 * time.Minute).Unix(), //Expiration time is set to 5 minutes
+		},
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, err := token.SignedString([]byte(config.Jwtsecret))
+	return tokenString, err
+}
+
 // VerifyToken is used to validate token
 func VerifyToken(next http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
-		next.ServeHTTP(res, req)
+		var errorResponse response.Error
+		authHeader := req.Header.Get("Authorization")
+		bearerToken := strings.Split(authHeader, " ")
+		if len(bearerToken) == 2 {
+			claims := &Claims{}
+			token, error := jwt.ParseWithClaims(bearerToken[1], claims, func(token *jwt.Token) (interface{}, error) {
+				return []byte(config.Jwtsecret), nil
+			})
+			if error != nil || !token.Valid {
+				errorResponse.Code = http.StatusUnauthorized
+				errorResponse.Error = config.InvalidToken
+				SetResponse(res, http.StatusBadRequest, errorResponse)
+				return
+			}
+			ctx := context.WithValue(req.Context(), "identity", claims.ID)
+			next.ServeHTTP(res, req.WithContext(ctx))
+		} else {
+			errorResponse.Code = http.StatusUnauthorized
+			errorResponse.Error = config.InvalidToken
+			SetResponse(res, http.StatusBadRequest, errorResponse)
+			return
+		}
 	})
-}
-
-// Recover is used to recover from panic situation
-func Recover() {
-
 }
 
 // SendSms is used to send sms
@@ -125,4 +166,17 @@ func MaskEmail(email string) string {
 // MaskNumber is used to mask
 func MaskNumber(number string) string {
 	return strings.Repeat("*", len(number)-4) + number[len(number)-4:]
+}
+
+// InArray Checks if a value exists within a slice
+func InArray(needle interface{}, haystack interface{}) bool {
+	if reflect.TypeOf(haystack).Kind() == reflect.Slice {
+		j := reflect.ValueOf(haystack)
+		for i := 0; i < j.Len(); i++ {
+			if reflect.DeepEqual(needle, j.Index(i).Interface()) == true {
+				return true
+			}
+		}
+	}
+	return false
 }

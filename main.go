@@ -31,9 +31,8 @@ func notFound(res http.ResponseWriter, req *http.Request) {
 
 func main() {
 	router := mux.NewRouter()
-	router.HandleFunc("/user", (controllers.Authorize)).Methods("POST")
-	router.HandleFunc("/otp/verify", (controllers.Verify)).Methods("PATCH")
-	router.HandleFunc("/otp/resend", helpers.Logger(controllers.Resend)).Methods("PATCH")
+	router.HandleFunc("/user", helpers.Logger(controllers.Authorize)).Methods("POST")
+	router.HandleFunc("/otp/verify", helpers.Logger(helpers.VerifyToken(controllers.Verify))).Methods("PATCH")
 	router.HandleFunc("/user/{username}", helpers.Logger(helpers.VerifyToken(controllers.ReadDetail))).Methods("GET")
 	router.HandleFunc("/user/{username}", helpers.Logger(helpers.VerifyToken(controllers.UpdateDetail))).Methods("PATCH")
 	router.NotFoundHandler = http.HandlerFunc(notFound)

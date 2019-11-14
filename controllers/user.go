@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"encoding/json"
-	"math"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -14,7 +13,6 @@ import (
 	"github.com/mustanish/jwtAPI/models"
 	userRequest "github.com/mustanish/jwtAPI/request/user"
 	"github.com/mustanish/jwtAPI/response"
-	"github.com/myesui/uuid"
 )
 
 // Authorize is used to authorize a user to use our application Implement Diffie-Hellman
@@ -31,7 +29,7 @@ func Authorize(res http.ResponseWriter, req *http.Request) {
 	error = json.NewDecoder(req.Body).Decode(&authorize)
 	if error != nil {
 		errorResponse.Code = http.StatusBadRequest
-		errorResponse.Error = config.InvalidJSON
+		errorResponse.Error = config.InvalidRequest
 		helpers.SetResponse(res, http.StatusBadRequest, errorResponse)
 		return
 	}
@@ -44,20 +42,22 @@ func Authorize(res http.ResponseWriter, req *http.Request) {
 	}
 	user := userModel.Check(authorize.Identity)
 	user.OTP, _ = strconv.ParseInt(helpers.GenerateOtp(6), 10, 64)
-	user.Token = uuid.NewV4().String()
-	user.TokenValidity = time.Now().Unix()
+	user.OtpValidity = time.Now().Unix()
 	if identity.MatchString(authorize.Identity) {
 		user.Email = &authorize.Identity
+		user.OtpType = "authorizeEmail"
 		successResponse.Msg = strings.Replace(config.AuthorizeMsg, "identity", "email "+helpers.MaskEmail(authorize.Identity), -1)
 	} else {
 		user.PhoneNumber = &authorize.Identity
+		user.OtpType = "authorizePhone"
 		successResponse.Msg = strings.Replace(config.AuthorizeMsg, "identity", "mobile "+helpers.MaskNumber(authorize.Identity), -1)
 	}
 	if user.ID > 0 {
 		error = userModel.UpdateDetail()
 	} else {
-		error = userModel.Authorize()
+		user, error = userModel.Authorize()
 	}
+	token, error := helpers.GenerateToken(user.ID)
 	if error != nil {
 		errorResponse.Code = http.StatusServiceUnavailable
 		errorResponse.Error = config.ServiceUnavailable
@@ -65,14 +65,10 @@ func Authorize(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 	response := make(map[string]interface{})
-	response["authorizationToken"] = user.Token
+	response["authorizationToken"] = token
 	successResponse.Code = http.StatusOK
 	successResponse.Data = response
 	helpers.SetResponse(res, http.StatusOK, successResponse)
-}
-
-// Authenticate is used to register/login to our application
-func Authenticate(res http.ResponseWriter, req *http.Request) {
 }
 
 // Verify is used to verify OTP
@@ -87,7 +83,7 @@ func Verify(res http.ResponseWriter, req *http.Request) {
 	error = json.NewDecoder(req.Body).Decode(&verfiy)
 	if error != nil {
 		errorResponse.Code = http.StatusBadRequest
-		errorResponse.Error = config.InvalidJSON
+		errorResponse.Error = config.InvalidRequest
 		helpers.SetResponse(res, http.StatusBadRequest, errorResponse)
 		return
 	}
@@ -98,27 +94,32 @@ func Verify(res http.ResponseWriter, req *http.Request) {
 		helpers.SetResponse(res, http.StatusBadRequest, errorResponse)
 		return
 	}
-	user := userModel.Check(verfiy.Token)
-	elapsed := time.Since(time.Unix(user.TokenValidity, 0))
+	user := userModel.Check(req.Context().Value("identity"))
+	//log.Println(user)
 	otp, _ := strconv.ParseInt(verfiy.Otp, 10, 64)
-	if user.ID < 0 || math.Round(elapsed.Seconds()) > 120 || user.OTP != otp {
+	if user.ID < 0 || user.OTP != otp || !helpers.InArray(user.OtpType, []string{"authorizeEmail", "authorizePhone", "verifyEmail", "verifyPhone"}) {
 		errorResponse.Code = http.StatusBadRequest
 		errorResponse.Error = config.InvalidToken
 		helpers.SetResponse(res, http.StatusBadRequest, errorResponse)
 		return
 	}
-	switch verfiy.Event {
-	case "authorize":
+	switch user.OtpType {
+	case "authorizeEmail":
+		user.EmailVerify = 1
 		user.LastLogedIn = time.Now()
 		successResponse.Msg = config.LoggedInMsg
-	case "email":
+	case "authorizePhone":
+		user.PhoneVerify = 1
+		user.LastLogedIn = time.Now()
+		successResponse.Msg = config.LoggedInMsg
+	case "verifyEmail":
 		user.EmailVerify = 1
 		successResponse.Msg = config.EmailVerifyMsg
-	case "phone":
+	case "verifyPhone":
 		user.PhoneVerify = 1
 		successResponse.Msg = config.PhoneVerifyMsg
 	}
-	user.OTP, user.Token, user.TokenValidity = 0, "", 0
+	user.OTP, user.OtpType, user.OtpValidity = 0, "", 0
 	error = userModel.UpdateDetail()
 	if error != nil {
 		errorResponse.Code = http.StatusServiceUnavailable
@@ -128,10 +129,6 @@ func Verify(res http.ResponseWriter, req *http.Request) {
 	}
 	successResponse.Code = http.StatusOK
 	helpers.SetResponse(res, http.StatusOK, successResponse)
-}
-
-// Resend is used to send OTP via email/sms
-func Resend(res http.ResponseWriter, req *http.Request) {
 }
 
 // ReadDetail is used to fetch detail of requested user

@@ -9,9 +9,9 @@ type User entity.User
 //entity.DB.LogMode(true)
 
 // Authorize model method
-func (u *User) Authorize() error {
+func (u *User) Authorize() (*User, error) {
 	response := entity.DB.Create(&u)
-	return response.Error
+	return u, response.Error
 }
 
 func (u *User) ReadDetail() {
@@ -27,12 +27,8 @@ func (u *User) Verify() {
 
 }
 
-func (u *User) Resend() {
-
-}
-
 // Check model method
-func (u *User) Check(identity string) *User {
-	entity.DB.Raw("SELECT * FROM `users` WHERE `users`.`deleted_at` IS NULL AND ((email = ?) OR (phone_number = ?) OR (user_name = ?) OR (token = ?))", identity, identity, identity, identity).Scan(&u)
+func (u *User) Check(identity interface{}) *User {
+	entity.DB.Raw("SELECT * FROM `users` WHERE `users`.`deleted_at` IS NULL AND ((email = ?) OR (phone_number = ?) OR (user_name = ?) OR ID = ?)", identity, identity, identity, identity).Scan(&u)
 	return u
 }
