@@ -133,13 +133,6 @@ func RemoveTrailingSlash(next http.Handler) http.Handler {
 	})
 }
 
-// SetResponse is used to set response
-func SetResponse(res http.ResponseWriter, status int, data interface{}) {
-	res.Header().Set("Content-Type", "application/json")
-	res.WriteHeader(status)
-	json.NewEncoder(res).Encode(data)
-}
-
 // GenerateOtp is used to generate otp
 func GenerateOtp(max int) string {
 	table := [...]byte{'1', '2', '3', '4', '5', '6', '7', '8', '9', '0'}
@@ -179,4 +172,11 @@ func InArray(needle interface{}, haystack interface{}) bool {
 		}
 	}
 	return false
+}
+
+// SetResponse is used to set response
+func SetResponse(res http.ResponseWriter, status int, data interface{}) {
+	res.Header().Set("Content-Type", "application/json")
+	res.WriteHeader(status)
+	json.NewEncoder(res).Encode(data)
 }
