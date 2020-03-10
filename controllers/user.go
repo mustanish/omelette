@@ -8,11 +8,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mustanish/jwtAPI/config"
-	"github.com/mustanish/jwtAPI/helpers"
-	"github.com/mustanish/jwtAPI/models"
-	userRequest "github.com/mustanish/jwtAPI/request/user"
-	"github.com/mustanish/jwtAPI/response"
+	"github.com/mustanish/omelette/config"
+	"github.com/mustanish/omelette/helpers"
+	"github.com/mustanish/omelette/models"
+	userRequest "github.com/mustanish/omelette/request/user"
+	"github.com/mustanish/omelette/response"
 )
 
 // Authorize is used to authorize a user to use our application Implement Diffie-Hellman

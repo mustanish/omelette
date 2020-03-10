@@ -1,7 +1,7 @@
 package models
 
 import (
-	"github.com/mustanish/jwtAPI/entity"
+	"github.com/mustanish/omelette/entity"
 )
 
 type User entity.User

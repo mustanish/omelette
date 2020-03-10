@@ -5,11 +5,11 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/mustanish/jwtAPI/config"
-	"github.com/mustanish/jwtAPI/controllers"
-	"github.com/mustanish/jwtAPI/entity"
-	"github.com/mustanish/jwtAPI/helpers"
-	"github.com/mustanish/jwtAPI/response"
+	config "github.com/mustanish/omelette/configs"
+	"github.com/mustanish/omelette/controllers"
+	"github.com/mustanish/omelette/entity"
+	"github.com/mustanish/omelette/helpers"
+	response "github.com/mustanish/omelette/responses"
 )
 
 var (

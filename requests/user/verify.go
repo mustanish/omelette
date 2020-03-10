@@ -1,4 +1,4 @@
-package userRequest
+package userrequest
 
 import (
 	validation "github.com/go-ozzo/ozzo-validation"

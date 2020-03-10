@@ -1,10 +1,10 @@
-package userRequest
+package userrequest
 
 import (
 	"regexp"
 
 	validation "github.com/go-ozzo/ozzo-validation"
-	"github.com/mustanish/jwtAPI/config"
+	"github.com/mustanish/omelette/config"
 )
 
 // Authorize is used to map input JSON

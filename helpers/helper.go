@@ -17,8 +17,8 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/mustanish/jwtAPI/config"
-	"github.com/mustanish/jwtAPI/response"
+	"github.com/mustanish/omelette/config"
+	"github.com/mustanish/omelette/response"
 )
 
 type logger struct {
