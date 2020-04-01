@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/go-chi/render"
@@ -10,8 +11,8 @@ import (
 	"github.com/thedevsaddam/govalidator"
 )
 
-// Body is exposed to validate request body, headers, params, query
-func Body(next http.Handler) http.Handler {
+// ValidateBody validates request body
+func ValidateBody(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
 		var (
 			route  = req.URL.String()
@@ -23,9 +24,11 @@ func Body(next http.Handler) http.Handler {
 				rules    = govalidator.MapData{}
 				messages = govalidator.MapData{}
 			)
+
 			for key, value := range schema["rules"].(map[string][]string) {
 				rules[key] = value
 			}
+
 			for key, value := range schema["messages"].(map[string][]string) {
 				messages[key] = value
 			}
@@ -39,14 +42,22 @@ func Body(next http.Handler) http.Handler {
 				err = govalidator.New(opts).ValidateJSON()
 			)
 			if len(err) > 0 {
-				if value, exist := err["_error"]; exist && value[0] == "EOF" {
+				if _, exist := err["_error"]; exist {
 					render.Render(res, req, responses.NewHTTPError(http.StatusBadRequest, constants.InvalidReq))
 				} else {
 					render.Render(res, req, responses.NewHTTPError(http.StatusBadRequest, err))
 				}
 				return
 			}
-			next.ServeHTTP(res, req)
+			ctx := context.WithValue(req.Context(), "data", schema["data"])
+			next.ServeHTTP(res, req.WithContext(ctx))
 		}
+	})
+}
+
+// ValidateHeader validates request headers, params, query
+func ValidateHeader(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
+		next.ServeHTTP(res, req)
 	})
 }

@@ -1,0 +1,17 @@
+version: "3.7"
+services:
+    omelette-db:
+        image: arangodb:3.6.2
+        container_name: omelette-db
+        restart: unless-stopped
+        environment:
+            ARANGO_ROOT_PASSWORD: omelette
+        volumes:
+            - arangodb_data:/var/lib/arangodb3
+            - arangodb_apps:/var/lib/arangodb3-apps
+        ports:
+            - "8529:8529"
+
+volumes:
+    arangodb_data:
+    arangodb_apps:

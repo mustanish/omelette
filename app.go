@@ -6,24 +6,36 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	"github.com/go-chi/cors"
 	"github.com/go-chi/render"
+	"github.com/mustanish/omelette/app/config"
 	"github.com/mustanish/omelette/app/responses"
 	"github.com/mustanish/omelette/app/routes"
 )
 
 func main() {
-	r := chi.NewRouter()
-	r.Use(
+	var (
+		router    = chi.NewRouter()
+		config, _ = config.LoadConfig()
+	)
+	cors := cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		AllowCredentials: true,
+		MaxAge:           300, // Maximum value not ignored by any of major browsers
+	})
+	router.Use(
 		render.SetContentType(render.ContentTypeJSON), // Set content-Type headers as application/json
 		middleware.Logger,          // Log API request calls
-		middleware.DefaultCompress, // Compress results, mostly gzipping assets and json
 		middleware.RedirectSlashes, // Redirect slashes to no slash URL versions
 		middleware.Recoverer,       // Recover from panics without crashing server
+		cors.Handler,               // Enable CORS globally
 	)
-	r.Mount("/user", routes.User())
-	r.Mount("/book", routes.Book())
-	r.NotFound(responses.NotFound)
-	r.MethodNotAllowed(responses.MethodNotAllowed)
-	fmt.Println("\033[32m" + "⇨ http server started at http://localhost:3333" + "\033[0m")
-	http.ListenAndServe(":3333", r)
+	router.Mount("/user", routes.User())
+	router.Mount("/book", routes.Book())
+	router.NotFound(responses.NotFound)
+	router.MethodNotAllowed(responses.MethodNotAllowed)
+	fmt.Println("\033[32m" + "⇨ http server started at " + config.Server.Host + ":" + config.Server.Port + "\033[0m")
+	http.ListenAndServe(":"+config.Server.Port, router)
 }

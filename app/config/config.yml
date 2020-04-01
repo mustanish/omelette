@@ -1,0 +1,18 @@
+development:
+    server:
+        port: "3000"
+        host: "http://localhost"
+    database:
+        DBUrl: "http://localhost:8529"
+        DBName: "bookstore"
+        DBUser: "root"
+        DBPassword: "omelette"
+production:
+    server:
+        port:
+        host:
+    database:
+        DBUrl:
+        DBName:
+        DBUser:
+        DBPassword:
