@@ -9,8 +9,8 @@ import (
 // User is used to expose user specific routes
 func User() *chi.Mux {
 	r := chi.NewRouter()
-	r.With(middlewares.Body).Post("/auth", user.Authenticate)
-	r.Post("/verify", user.VerifyUser)
+	r.With(middlewares.ValidateBody).Post("/auth", user.Authenticate)
+	r.With(middlewares.VerifyToken).With(middlewares.ValidateBody).Patch("/verify", user.VerifyUser)
 	r.Route("/{id}", func(r chi.Router) {
 		r.Patch("/{id}", user.UpdateUser)
 		r.Get("/{id}", user.GetUser)

@@ -9,9 +9,9 @@ import (
 
 // HTTPError represents an error that occurred while handling a request.
 type HTTPError struct {
-	Code   int         `json:"-"`      // http response status code
-	Status string      `json:"status"` // user-level status message
-	Error  interface{} `json:"error"`  // application-level error message, for debugging
+	Code   int         `json:"-"` // http response status code
+	Status string      `json:"status"`
+	Error  interface{} `json:"error"`
 }
 
 // Render is implemented for managing response payloads.
