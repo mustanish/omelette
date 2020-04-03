@@ -11,10 +11,8 @@ func User() *chi.Mux {
 	r := chi.NewRouter()
 	r.With(middlewares.ValidateBody).Post("/auth", user.Authenticate)
 	r.With(middlewares.VerifyToken).With(middlewares.ValidateBody).Patch("/verify", user.VerifyUser)
-	r.Route("/{id}", func(r chi.Router) {
-		r.Patch("/{id}", user.UpdateUser)
-		r.Get("/{id}", user.GetUser)
-		r.Delete("/{id}", user.DeleteUser)
-	})
+	r.With(middlewares.VerifyToken).Patch("/", user.UpdateUser)
+	r.With(middlewares.VerifyToken).Get("/", user.GetUser)
+	r.With(middlewares.VerifyToken).Delete("/", user.Logout)
 	return r
 }

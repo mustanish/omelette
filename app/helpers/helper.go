@@ -8,25 +8,33 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/mustanish/omelette/app/constants"
+	uuid "github.com/satori/go.uuid"
 )
 
 // Claims represents the StandardClaims
 type Claims struct {
+	TokenID string `json:"tokenId"`
 	jwt.StandardClaims
 }
 
 // GenerateToken generates access token
-func GenerateToken(ID string, validity time.Duration) (string, error) {
+func GenerateToken(ID string, validity time.Duration) (string, string, int64, error) {
+	var (
+		now       = time.Now()
+		expiresAt = now.Add(time.Second * validity)
+		tokenID   = uuid.NewV4().String()
+	)
 	claims := &Claims{
+		TokenID: tokenID,
 		StandardClaims: jwt.StandardClaims{
 			Id:        ID,
-			IssuedAt:  time.Now().Unix(),
-			ExpiresAt: time.Now().Add(time.Second * validity).Unix(),
+			IssuedAt:  now.Unix(),
+			ExpiresAt: expiresAt.Unix(),
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenString, err := token.SignedString([]byte(constants.Jwtsecret))
-	return tokenString, err
+	return tokenString, tokenID, expiresAt.Unix(), err
 }
 
 // VerifyToken is used to validate token
