@@ -1,35 +1,37 @@
 package config
 
 import (
+	"io/ioutil"
 	"log"
+	"os"
 
-	"github.com/spf13/viper"
+	"gopkg.in/yaml.v2"
 )
 
 type (
 
 	// Config exported to be used globally
 	Config struct {
-		Server   serverConfig   `json:"server"`
-		Database databaseConfig `json:"database"`
+		Server   serverConfig   `yaml:"server"`
+		Database databaseConfig `yaml:"database"`
 	}
 
 	serverConfig struct {
-		Port string
-		Host string
+		Port string `yaml:"port"`
+		Host string `yaml:"host"`
 	}
 
 	databaseConfig struct {
-		DBUrl      string
-		DBName     string
-		DBUser     string
-		DBPassword string
+		DBUrl      string `yaml:"dbUrl"`
+		DBName     string `yaml:"dbName"`
+		DBUser     string `yaml:"dbUser"`
+		DBPassword string `yaml:"dbPassword"`
 	}
 
 	profile struct {
-		Development Config `json:"development"`
-		Staging     Config `json:"staging"`
-		Production  Config `json:"production"`
+		Development Config `yaml:"development"`
+		Staging     Config `yaml:"staging"`
+		Production  Config `yaml:"production"`
 	}
 )
 
@@ -39,19 +41,17 @@ func LoadConfig() (*Config, error) {
 		profile = new(profile)
 		config  = new(Config)
 	)
-	viper.SetConfigName("config")
-	viper.AddConfigPath("./app/config")
-	viper.AutomaticEnv()
-	viper.SetConfigType("yml")
-	if err := viper.ReadInConfig(); err != nil {
+	content, err := ioutil.ReadFile("config.yml")
+	if err != nil {
 		log.Println("FAILED::could not read config ERROR")
 		return nil, err
 	}
-	if err := viper.Unmarshal(profile); err != nil {
-		log.Println("FAILED::could not read config ERROR")
+	content = []byte(os.ExpandEnv(string(content)))
+	if err := yaml.Unmarshal(content, profile); err != nil {
+		log.Println("FAILED::could not unmarshal config ERROR")
 		return nil, err
 	}
-	activeProfile := viper.GetString("ENV")
+	activeProfile := os.Getenv("ENV")
 	if len(activeProfile) == 0 {
 		activeProfile = "development"
 	}

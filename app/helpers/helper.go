@@ -8,6 +8,7 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/mustanish/omelette/app/constants"
+	tokens "github.com/mustanish/omelette/app/repository"
 	uuid "github.com/satori/go.uuid"
 )
 
@@ -46,7 +47,8 @@ func VerifyToken(token string) (string, error) {
 	decoded, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
 		return []byte(constants.Jwtsecret), nil
 	})
-	if err != nil || !decoded.Valid {
+	exist, _ := tokens.Exist(claims.TokenID)
+	if err != nil || !decoded.Valid || !exist {
 		return ID, err
 	}
 	return claims.Id, nil

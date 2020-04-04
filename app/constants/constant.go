@@ -9,16 +9,16 @@ const MobileRegex = "[6-9]\\d{9}"
 // OTPLength represents max length of OTP
 const OTPLength = 6
 
-// OTPValidity represents validity of OTP in seconds
-const OTPValidity = 300
+// OTPValidity represents validity of OTP in seconds equivalent to 3 minutes
+const OTPValidity = 180
 
 // OTPType represents types of OTP
 var OTPType = map[string]string{"email": "verifyEmail", "phone": "verifyPhone"}
 
-// AccessTokenValidity represents access token validity in seconds
+// AccessTokenValidity represents access token validity in seconds equivalent to 1 hour
 const AccessTokenValidity = 3600
 
-// RefreshTokenValidity represents refresh token validity in seconds
+// RefreshTokenValidity represents refresh token validity in seconds equivalent to 7 days
 const RefreshTokenValidity = 604800
 
 // Jwtsecret represents secret to create token
