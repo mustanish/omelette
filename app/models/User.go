@@ -8,7 +8,7 @@ type User struct {
 	EmailVerify int64  `json:"emailVerify"`
 	Phone       string `json:"phone"`
 	PhoneVerify int64  `json:"phoneVerify"`
-	Age         int64  `json:"age"`
+	DOB         string `json:"dob"`
 	OTP         string `json:"otp"`
 	OtpType     string `json:"otpType"`
 	OtpValidity int64  `json:"otpValidity"`

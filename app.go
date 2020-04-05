@@ -27,11 +27,12 @@ func main() {
 	})
 	router.Use(
 		render.SetContentType(render.ContentTypeJSON), // Set content-Type headers as application/json
-		middleware.Logger,          // Log API request calls
-		middleware.RedirectSlashes, // Redirect slashes to no slash URL versions
-		middleware.Recoverer,       // Recover from panics without crashing server
-		cors.Handler,               // Enable CORS globally
+		middleware.Logger,       // Log API request calls
+		middleware.StripSlashes, // Strip slashes to no slash URL versions
+		middleware.Recoverer,    // Recover from panics without crashing server
+		cors.Handler,            // Enable CORS globally
 	)
+	router.Mount("/", routes.Auth())
 	router.Mount("/user", routes.User())
 	router.Mount("/book", routes.Book())
 	router.NotFound(responses.NotFound)

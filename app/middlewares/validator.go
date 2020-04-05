@@ -3,6 +3,7 @@ package middlewares
 import (
 	"context"
 	"net/http"
+	"strings"
 
 	"github.com/go-chi/render"
 	"github.com/mustanish/omelette/app/constants"
@@ -15,7 +16,7 @@ import (
 func ValidateBody(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
 		var (
-			route  = req.URL.String()
+			route  = strings.TrimSuffix(req.URL.String(), "/")
 			method = req.Method
 		)
 		if value, exist := schemas.Schema[route+":"+method]; exist {

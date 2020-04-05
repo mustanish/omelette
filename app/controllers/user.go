@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/go-chi/render"
+	"github.com/jinzhu/copier"
 	"github.com/mustanish/omelette/app/constants"
 	"github.com/mustanish/omelette/app/helpers"
 	"github.com/mustanish/omelette/app/repository"
@@ -34,6 +35,10 @@ func Authenticate(res http.ResponseWriter, req *http.Request) {
 	)
 	log.Println(OTP)
 	docKey, err := user.Exist(data.Identity)
+	if err != nil {
+		render.Render(res, req, responses.NewHTTPError(http.StatusServiceUnavailable, constants.Unavailable))
+		return
+	}
 	if isEmail.MatchString(data.Identity) {
 		user.Email = data.Identity
 		user.OtpType = constants.OTPType["email"]
@@ -51,18 +56,18 @@ func Authenticate(res http.ResponseWriter, req *http.Request) {
 		user.CreatedAt = now.Unix()
 		docKey, err = user.Authenticate()
 	}
+	tempToken, err := generateToken(docKey, "tempToken", constants.OTPValidity)
 	if err != nil {
 		render.Render(res, req, responses.NewHTTPError(http.StatusServiceUnavailable, constants.Unavailable))
 		return
 	}
-	token, _, _, _ := helpers.GenerateToken(docKey, constants.OTPValidity)
 	response["message"] = msg
-	response["accessToken"] = token
+	response["accessToken"] = tempToken
 	render.Render(res, req, responses.NewHTTPSucess(http.StatusOK, response))
 }
 
-// VerifyUser verifies generated OTP
-func VerifyUser(res http.ResponseWriter, req *http.Request) {
+// Login verifies OTP and generate access & refresh token
+func Login(res http.ResponseWriter, req *http.Request) {
 	ID := req.Context().Value("ID").(string)
 	docKey, err := user.Exist(ID)
 	if err != nil {
@@ -73,7 +78,7 @@ func VerifyUser(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 	var (
-		data       = req.Context().Value("data").(*userschemas.VerifyUser)
+		data       = req.Context().Value("data").(*userschemas.Login)
 		now        = time.Now().Unix()
 		response   = make(map[string]interface{})
 		timeDiff   = time.Unix(user.OtpValidity, 0).Sub(time.Now())
@@ -94,20 +99,12 @@ func VerifyUser(res http.ResponseWriter, req *http.Request) {
 		render.Render(res, req, responses.NewHTTPError(http.StatusServiceUnavailable, constants.Unavailable))
 		return
 	}
-	accessToken, accessID, accessExpires, _ := helpers.GenerateToken(docKey, constants.AccessTokenValidity)
-	token.Key = accessID
-	token.Type = "aceessToken"
-	token.ExpiresAt = accessExpires
-	err = token.AddToken()
+	accessToken, err := generateToken(docKey, "aceessToken", constants.AccessTokenValidity)
 	if err != nil {
 		render.Render(res, req, responses.NewHTTPError(http.StatusServiceUnavailable, constants.Unavailable))
 		return
 	}
-	refreshToken, refreshID, refreshExpires, _ := helpers.GenerateToken(docKey, constants.RefreshTokenValidity)
-	token.Key = refreshID
-	token.Type = "refreshToken"
-	token.ExpiresAt = refreshExpires
-	err = token.AddToken()
+	refreshToken, err := generateToken(docKey, "refreshToken", constants.RefreshTokenValidity)
 	if err != nil {
 		render.Render(res, req, responses.NewHTTPError(http.StatusServiceUnavailable, constants.Unavailable))
 		return
@@ -119,12 +116,105 @@ func VerifyUser(res http.ResponseWriter, req *http.Request) {
 
 // UpdateUser updates details of an existing user
 func UpdateUser(res http.ResponseWriter, req *http.Request) {
+	ID := req.Context().Value("ID").(string)
+	docKey, err := user.Exist(ID)
+	if err != nil {
+		render.Render(res, req, responses.NewHTTPError(http.StatusServiceUnavailable, constants.Unavailable))
+		return
+	} else if len(docKey) < 0 {
+		render.Render(res, req, responses.NewHTTPError(http.StatusBadRequest, constants.NotFoundResource))
+		return
+	}
+	var (
+		data     = req.Context().Value("data").(*userschemas.UpdateUser)
+		response responses.User
+	)
+	copier.Copy(user, data)
+	_, err = user.UpdateUser(docKey)
+	if err != nil {
+		render.Render(res, req, responses.NewHTTPError(http.StatusServiceUnavailable, constants.Unavailable))
+		return
+	}
+	copier.Copy(&response, user)
+	render.Render(res, req, responses.NewHTTPSucess(http.StatusOK, response))
 }
 
 // GetUser fetches details of an existing user
 func GetUser(res http.ResponseWriter, req *http.Request) {
+	ID := req.Context().Value("ID").(string)
+	docKey, err := user.Exist(ID)
+	if err != nil {
+		render.Render(res, req, responses.NewHTTPError(http.StatusServiceUnavailable, constants.Unavailable))
+		return
+	} else if len(docKey) < 0 {
+		render.Render(res, req, responses.NewHTTPError(http.StatusBadRequest, constants.NotFoundResource))
+		return
+	}
+	var response responses.User
+	copier.Copy(&response, user)
+	render.Render(res, req, responses.NewHTTPSucess(http.StatusOK, response))
 }
 
-// Logout logs out existing user
+// Logout deletes existing access token
 func Logout(res http.ResponseWriter, req *http.Request) {
+	var (
+		docKey   = req.Context().Value("tokenID").(string)
+		response = make(map[string]interface{})
+		msg      = constants.Logout
+	)
+	err := token.RemoveToken(docKey)
+	if err != nil {
+		render.Render(res, req, responses.NewHTTPError(http.StatusServiceUnavailable, constants.Unavailable))
+		return
+	}
+	response["message"] = msg
+	render.Render(res, req, responses.NewHTTPSucess(http.StatusOK, response))
+}
+
+// RefreshToken refreshes access token
+func RefreshToken(res http.ResponseWriter, req *http.Request) {
+	var (
+		ID       = req.Context().Value("ID").(string)
+		tokenID  = req.Context().Value("tokenID").(string)
+		response = make(map[string]interface{})
+	)
+	docKey, err := user.Exist(ID)
+	if err != nil {
+		render.Render(res, req, responses.NewHTTPError(http.StatusServiceUnavailable, constants.Unavailable))
+		return
+	} else if len(docKey) < 0 {
+		render.Render(res, req, responses.NewHTTPError(http.StatusBadRequest, constants.NotFoundResource))
+		return
+	}
+	err = token.RemoveToken(tokenID)
+	if err != nil {
+		render.Render(res, req, responses.NewHTTPError(http.StatusServiceUnavailable, constants.Unavailable))
+		return
+	}
+	accessToken, err := generateToken(docKey, "aceessToken", constants.AccessTokenValidity)
+	if err != nil {
+		render.Render(res, req, responses.NewHTTPError(http.StatusServiceUnavailable, constants.Unavailable))
+		return
+	}
+	refreshToken, err := generateToken(docKey, "refreshToken", constants.RefreshTokenValidity)
+	if err != nil {
+		render.Render(res, req, responses.NewHTTPError(http.StatusServiceUnavailable, constants.Unavailable))
+		return
+	}
+	response["accessToken"] = accessToken
+	response["refreshToken"] = refreshToken
+	render.Render(res, req, responses.NewHTTPSucess(http.StatusOK, response))
+}
+
+func generateToken(docKey string, tokenType string, validity time.Duration) (string, error) {
+	var tokenString string
+	tokenString, tokenID, tokenExpires, _ := helpers.GenerateToken(docKey, validity)
+	token.Key = tokenID
+	token.Type = tokenType
+	token.ExpiresAt = tokenExpires
+	err := token.AddToken()
+	if err != nil {
+		return tokenString, err
+	}
+	return tokenString, nil
 }

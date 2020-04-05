@@ -41,3 +41,6 @@ const InvalidToken = "Sorry either the token has expired or it is invalid"
 
 // NotFoundResource represents message for notfound resource
 const NotFoundResource = "The reuested resource was not found"
+
+// Logout represents message for logout
+const Logout = "You have been successfully logged out"

@@ -39,19 +39,20 @@ func GenerateToken(ID string, validity time.Duration) (string, string, int64, er
 }
 
 // VerifyToken is used to validate token
-func VerifyToken(token string) (string, error) {
+func VerifyToken(token string) (string, string, bool) {
 	var (
-		ID     string
-		claims = &Claims{}
+		userID  string
+		tokenID string
+		claims  = &Claims{}
 	)
 	decoded, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
 		return []byte(constants.Jwtsecret), nil
 	})
 	exist, _ := tokens.Exist(claims.TokenID)
 	if err != nil || !decoded.Valid || !exist {
-		return ID, err
+		return userID, tokenID, false
 	}
-	return claims.Id, nil
+	return claims.Id, claims.TokenID, true
 }
 
 // MaskEmail masks the provided email

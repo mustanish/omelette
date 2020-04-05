@@ -29,11 +29,6 @@ func (u *User) UpdateUser(docKey string) (string, error) {
 	return docKey, nil
 }
 
-// GetUser responsible for interaction with database
-func (u *User) GetUser(identity string) *User {
-	return u
-}
-
 // Exist responsible for interaction with database
 func (u *User) Exist(identity string) (string, error) {
 	var (

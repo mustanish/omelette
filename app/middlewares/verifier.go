@@ -19,12 +19,13 @@ func VerifyToken(next http.Handler) http.Handler {
 			render.Render(res, req, responses.NewHTTPError(http.StatusUnauthorized, constants.InvalidToken))
 			return
 		}
-		ID, err := helpers.VerifyToken(bearerToken[1])
-		if err != nil {
+		ID, tokenID, valid := helpers.VerifyToken(bearerToken[1])
+		if !valid {
 			render.Render(res, req, responses.NewHTTPError(http.StatusUnauthorized, constants.InvalidToken))
 			return
 		}
 		ctx := context.WithValue(req.Context(), "ID", ID)
+		ctx = context.WithValue(ctx, "tokenID", tokenID)
 		next.ServeHTTP(res, req.WithContext(ctx))
 	})
 }
