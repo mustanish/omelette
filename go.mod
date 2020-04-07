@@ -11,6 +11,8 @@ require (
 	github.com/go-chi/render v1.0.1
 	github.com/jinzhu/copier v0.0.0-20190924061706-b57f9002281a
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
+	github.com/onsi/ginkgo v1.12.0
+	github.com/onsi/gomega v1.9.0
 	github.com/satori/go.uuid v1.2.0
 	github.com/thedevsaddam/govalidator v1.9.9
 	golang.org/x/crypto v0.0.0-20200403201458-baeed622b8d8

@@ -5,8 +5,6 @@ import (
 	"log"
 
 	"github.com/arangodb/go-driver"
-	"github.com/arangodb/go-driver/http"
-	"github.com/mustanish/omelette/app/config"
 )
 
 var (
@@ -15,10 +13,16 @@ var (
 )
 
 func init() {
-	var (
-		client    driver.Client
-		config, _ = config.LoadConfig()
-		ctx       = context.Background()
+	//var config, _ = config.LoadConfig()
+	//InitializeDB(config)
+}
+
+// InitializeDB initializes database
+func InitializeDB() {
+	log.Println("called")
+	/*var (
+		client driver.Client
+		ctx    = context.Background()
 	)
 	if conn, err := http.NewConnection(http.ConnectionConfig{Endpoints: []string{config.Database.DBUrl}}); err != nil {
 		log.Println("FAILED::could Not connect to database because of", err.Error())
@@ -32,7 +36,7 @@ func init() {
 		db, _ = client.Database(ctx, config.Database.DBName)
 	} else {
 		db, _ = client.CreateDatabase(ctx, config.Database.DBName, nil)
-	}
+	}*/
 }
 
 // OpenCollection opens a collection within the database
