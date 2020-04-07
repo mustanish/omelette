@@ -9,7 +9,6 @@ import (
 )
 
 type (
-
 	// Config exported to be used globally
 	Config struct {
 		Server   serverConfig   `yaml:"server"`
@@ -30,7 +29,7 @@ type (
 
 	profile struct {
 		Development Config `yaml:"development"`
-		Staging     Config `yaml:"staging"`
+		Testing     Config `yaml:"testing"`
 		Production  Config `yaml:"production"`
 	}
 )
@@ -38,20 +37,24 @@ type (
 // LoadConfig exported to be used globally
 func LoadConfig() (*Config, error) {
 	var (
-		profile = new(profile)
-		config  = new(Config)
+		profile       = new(profile)
+		config        = new(Config)
+		activeProfile = os.Getenv("ENV")
+		filePath      = "config.yml"
 	)
-	content, err := ioutil.ReadFile("config.yml")
+	if activeProfile == "testing" {
+		filePath = "../config.yml"
+	}
+	content, err := ioutil.ReadFile(filePath)
 	if err != nil {
-		log.Println("FAILED::could not read config ERROR")
+		log.Println("FAILED::could not read config ERROR because of", err.Error())
 		return nil, err
 	}
 	content = []byte(os.ExpandEnv(string(content)))
 	if err := yaml.Unmarshal(content, profile); err != nil {
-		log.Println("FAILED::could not unmarshal config ERROR")
+		log.Println("FAILED::could not unmarshal config ERROR because of", err.Error())
 		return nil, err
 	}
-	activeProfile := os.Getenv("ENV")
 	if len(activeProfile) == 0 {
 		activeProfile = "development"
 	}
@@ -59,8 +62,8 @@ func LoadConfig() (*Config, error) {
 	case "development":
 		config = &profile.Development
 		break
-	case "staging":
-		config = &profile.Staging
+	case "testing":
+		config = &profile.Testing
 		break
 	case "production":
 		config = &profile.Production

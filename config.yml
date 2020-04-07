@@ -1,12 +1,18 @@
+testing:
+    database:
+        dbUrl: 'http://localhost:8529'
+        dbName: 'bookstore_test'
+        dbUser: 'root'
+        dbPassword: 'omelette'
 development:
     server:
-        port: "3000"
-        host: "http://localhost"
+        port: '3000'
+        host: 'http://localhost'
     database:
-        dbUrl: "http://localhost:8529"
-        dbName: "bookstore"
-        dbUser: "root"
-        dbPassword: "omelette"
+        dbUrl: 'http://localhost:8529'
+        dbName: 'bookstore'
+        dbUser: 'root'
+        dbPassword: 'omelette'
 production:
     server:
         port:

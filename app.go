@@ -9,6 +9,7 @@ import (
 	"github.com/go-chi/cors"
 	"github.com/go-chi/render"
 	"github.com/mustanish/omelette/app/config"
+	"github.com/mustanish/omelette/app/connectors"
 	"github.com/mustanish/omelette/app/responses"
 	"github.com/mustanish/omelette/app/routes"
 )
@@ -18,6 +19,7 @@ func main() {
 		router    = chi.NewRouter()
 		config, _ = config.LoadConfig()
 	)
+	connectors.Initialize(config)
 	cors := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},

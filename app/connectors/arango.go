@@ -5,6 +5,8 @@ import (
 	"log"
 
 	"github.com/arangodb/go-driver"
+	"github.com/arangodb/go-driver/http"
+	"github.com/mustanish/omelette/app/config"
 )
 
 var (
@@ -12,15 +14,9 @@ var (
 	col driver.Collection
 )
 
-func init() {
-	//var config, _ = config.LoadConfig()
-	//InitializeDB(config)
-}
-
-// InitializeDB initializes database
-func InitializeDB() {
-	log.Println("called")
-	/*var (
+// Initialize creates/opens database
+func Initialize(config *config.Config) {
+	var (
 		client driver.Client
 		ctx    = context.Background()
 	)
@@ -36,7 +32,7 @@ func InitializeDB() {
 		db, _ = client.Database(ctx, config.Database.DBName)
 	} else {
 		db, _ = client.CreateDatabase(ctx, config.Database.DBName, nil)
-	}*/
+	}
 }
 
 // OpenCollection opens a collection within the database
@@ -112,4 +108,9 @@ func QueryDocument(query string, bindVars map[string]interface{}, result interfa
 		return docKey, err
 	}
 	return meta.Key, nil
+}
+
+// Drop removes database
+func Drop() {
+	db.Remove(context.Background())
 }
