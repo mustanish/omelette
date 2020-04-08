@@ -6,6 +6,7 @@ import (
 
 	"github.com/mustanish/omelette/app/config"
 	"github.com/mustanish/omelette/app/connectors"
+	"github.com/mustanish/omelette/app/routes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -17,13 +18,12 @@ func TestTests(t *testing.T) {
 
 var _ = BeforeSuite(func() {
 	os.Setenv("ENV", "testing")
-	config, _ := config.LoadConfig()
-	connectors.Initialize(config)
+	cfg, _ := config.LoadConfig()
+	connectors.Initialize(cfg)
+	routes.InitializeRouter()
 	os.Unsetenv("ENV")
-	//log.Println("First One")
 })
 
 var _ = AfterSuite(func() {
 	connectors.Drop()
-	//log.Println("First Two")
 })

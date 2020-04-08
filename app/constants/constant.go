@@ -4,7 +4,7 @@ package constants
 const EmailRegex = "[a-z0-9._%+\\-]+@[a-z0-9.\\-]+\\.[a-z]{2,4}"
 
 // MobileRegex represents regex to validate mobile number
-const MobileRegex = "[6-9]\\d{9}"
+const MobileRegex = "([0]|\\+91)?\\d{10}(?:,([0]|\\+91)?\\d{10})"
 
 // OTPLength represents max length of OTP
 const OTPLength = 6

@@ -15,7 +15,7 @@ require (
 	github.com/onsi/gomega v1.9.0
 	github.com/satori/go.uuid v1.2.0
 	github.com/thedevsaddam/govalidator v1.9.9
-	golang.org/x/crypto v0.0.0-20200403201458-baeed622b8d8
+	golang.org/x/crypto v0.0.0-20200406173513-056763e48d71
 	golang.org/x/net v0.0.0-20200324143707-d3edc9973b7e // indirect
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
 	gopkg.in/yaml.v2 v2.2.8

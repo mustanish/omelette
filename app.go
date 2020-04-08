@@ -20,9 +20,9 @@ func initConnector() {
 }
 
 func initServer() {
-	router := routes.InitializeRouter()
+	routes.InitializeRouter()
 	log.Println("\033[32m" + "⇨ http server started at " + cfg.Server.Host + ":" + cfg.Server.Port + "\033[0m")
-	http.ListenAndServe(":"+cfg.Server.Port, router)
+	http.ListenAndServe(":"+cfg.Server.Port, routes.RouterInstance())
 }
 
 func main() {

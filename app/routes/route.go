@@ -8,9 +8,10 @@ import (
 	"github.com/mustanish/omelette/app/responses"
 )
 
+var router = chi.NewRouter()
+
 // InitializeRouter initializes router
-func InitializeRouter() *chi.Mux {
-	var router = chi.NewRouter()
+func InitializeRouter() {
 	cors := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
@@ -30,5 +31,9 @@ func InitializeRouter() *chi.Mux {
 	router.Mount("/book", Book())
 	router.NotFound(responses.NotFound)
 	router.MethodNotAllowed(responses.MethodNotAllowed)
+}
+
+// RouterInstance returns router instance
+func RouterInstance() *chi.Mux {
 	return router
 }
