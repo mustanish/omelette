@@ -10,7 +10,7 @@ type Authenticate struct {
 var (
 	authenticate      Authenticate
 	authenticateRules = map[string][]string{
-		"identity": {"required", "regex:^" + constants.EmailRegex + "|" + constants.MobileRegex + "$"},
+		"identity": {"required", "regex:^" + constants.EmailRegex + "|" + constants.MobileRegex + "*$"},
 	}
 	authenticateMessages = map[string][]string{
 		"identity": {"required:" + constants.IdentityRequired, "regex:" + constants.IdentityRegex},

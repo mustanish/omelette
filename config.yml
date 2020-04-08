@@ -1,4 +1,7 @@
 testing:
+    server:
+        port:
+        host:
     database:
         dbUrl: 'http://localhost:8529'
         dbName: 'bookstore_test'
