@@ -2,11 +2,11 @@ package responses
 
 // User act as user response
 type User struct {
-	Name        string `json:"name"`
-	UserName    string `json:"userName"`
-	Email       string `json:"email"`
-	EmailVerify int64  `json:"emailVerify"`
-	Phone       string `json:"phone"`
-	PhoneVerify int64  `json:"phoneVerify"`
-	DOB         string `json:"dob"`
+	Name        string `json:"name,omitempty"`
+	UserName    string `json:"userName,omitempty"`
+	Email       string `json:"email,omitempty"`
+	EmailVerify int64  `json:"emailVerify,omitempty"`
+	Phone       string `json:"phone,omitempty"`
+	PhoneVerify int64  `json:"phoneVerify,omitempty"`
+	DOB         string `json:"dob,omitempty"`
 }

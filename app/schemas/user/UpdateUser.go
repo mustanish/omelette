@@ -4,11 +4,11 @@ import "github.com/mustanish/omelette/app/constants"
 
 // UpdateUser maps / route to update profile
 type UpdateUser struct {
-	Name     string `json:"name"`
-	UserName string `json:"userName"`
-	Email    string `json:"email"`
-	Phone    string `json:"phone"`
-	DOB      string `json:"dob"`
+	Name     *string `json:"name,omitempty"`
+	UserName *string `json:"userName,omitempty"`
+	Email    *string `json:"email,omitempty"`
+	Phone    *string `json:"phone,omitempty"`
+	DOB      *string `json:"dob,omitempty"`
 }
 
 var (
