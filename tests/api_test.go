@@ -16,14 +16,17 @@ func TestTests(t *testing.T) {
 	RunSpecs(t, "Tests Suite")
 }
 
+var accessToken string
+var refreshToken string
+
 var _ = BeforeSuite(func() {
 	os.Setenv("ENV", "testing")
 	cfg, _ := config.LoadConfig()
 	connectors.Initialize(cfg)
 	routes.InitializeRouter()
-	os.Unsetenv("ENV")
 })
 
 var _ = AfterSuite(func() {
 	connectors.Drop()
+	os.Unsetenv("ENV")
 })

@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"log"
 	"net/http"
 	"regexp"
 	"strings"
@@ -33,7 +32,7 @@ func Authenticate(res http.ResponseWriter, req *http.Request) {
 		msg      string
 		response = make(map[string]interface{})
 	)
-	log.Println(OTP)
+	//log.Println(OTP)
 	docKey, err := user.Exist(data.Identity)
 	if err != nil {
 		render.Render(res, req, responses.NewHTTPError(http.StatusServiceUnavailable, constants.Unavailable))

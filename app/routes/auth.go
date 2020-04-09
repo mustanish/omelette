@@ -10,7 +10,7 @@ import (
 func Auth() *chi.Mux {
 	router := chi.NewRouter()
 	router.With(middlewares.ValidateBody).Post("/auth", user.Authenticate)
-	router.With(middlewares.VerifyToken).With(middlewares.ValidateBody).Patch("/login", user.Login)
+	router.With(middlewares.VerifyToken).With(middlewares.ValidateBody).Post("/login", user.Login)
 	router.With(middlewares.VerifyToken).Delete("/logout", user.Logout)
 	router.With(middlewares.VerifyToken).Post("/refresh/token", user.RefreshToken)
 	return router

@@ -9,6 +9,9 @@ const MobileRegex = "([0]|\\+91)?\\d{10}(?:,([0]|\\+91)?\\d{10})"
 // OTPLength represents max length of OTP
 const OTPLength = 6
 
+// OTPTest represents OTP for testing
+const OTPTest = "000000"
+
 // OTPValidity represents validity of OTP in seconds equivalent to 3 minutes
 const OTPValidity = 180
 

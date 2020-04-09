@@ -17,7 +17,7 @@ var (
 		"name":     {"alpha", "between:3,50"},
 		"userName": {"alpha_dash", "between:3,50"},
 		"email":    {"regex:^" + constants.EmailRegex + "$"},
-		"phone":    {"regex:^" + constants.MobileRegex + "$"},
+		"phone":    {"regex:^" + constants.MobileRegex + "*$"},
 		"dob":      {"date"},
 	}
 	updateUserMessages = map[string][]string{

@@ -3,6 +3,7 @@ package helpers
 import (
 	"crypto/rand"
 	"io"
+	"os"
 	"strings"
 	"time"
 
@@ -68,6 +69,10 @@ func MaskNumber(number string) string {
 
 // GenerateOTP generates an OTP to verify email/phone
 func GenerateOTP(length int) string {
+	activeProfile := os.Getenv("ENV")
+	if activeProfile == "testing" {
+		return constants.OTPTest
+	}
 	table := [...]byte{'1', '2', '3', '4', '5', '6', '7', '8', '9', '0'}
 	buffer := make([]byte, length)
 	io.ReadAtLeast(rand.Reader, buffer, length)
