@@ -1,4 +1,4 @@
-# Get golang's alpines image as your base image
+# Get golang's alpines image as the base image
 FROM golang:alpine
 
 # Set working directory inside container
@@ -13,13 +13,13 @@ RUN go mod download
 # Copy entire soucre code from host to the working directory inside container
 COPY  ./ ./
 
-# Get compiledaemon to rebuild and restart my application
+# Get compiledaemon to rebuild and restart the application
 RUN go get github.com/githubnemo/CompileDaemon
 
 # Expose port 8080 to the outside world
 EXPOSE 3000
 
-# Configure compiledaemon to rebuild and restart my application
+# Configure compiledaemon to rebuild and restart the application
 CMD CompileDaemon --build="go build server.go" --command=./server
 
 
