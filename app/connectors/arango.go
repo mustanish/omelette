@@ -3,6 +3,7 @@ package connectors
 import (
 	"context"
 	"log"
+	"os"
 
 	"github.com/arangodb/go-driver"
 	"github.com/arangodb/go-driver/http"
@@ -20,7 +21,7 @@ func Initialize(config *config.Config) {
 		client driver.Client
 		ctx    = context.Background()
 	)
-	if conn, err := http.NewConnection(http.ConnectionConfig{Endpoints: []string{config.Database.DBUrl}}); err != nil {
+	if conn, err := http.NewConnection(http.ConnectionConfig{Endpoints: []string{os.Getenv("DATABASE_URL")}}); err != nil {
 		log.Println("FAILED::could Not connect to database because of", err.Error())
 	} else if client, err = driver.NewClient(driver.ClientConfig{
 		Connection:     conn,
@@ -37,6 +38,7 @@ func Initialize(config *config.Config) {
 
 // OpenCollection opens a collection within the database
 func OpenCollection(name string) {
+	log.Println(db)
 	var ctx = context.Background()
 	if exist, _ := db.CollectionExists(ctx, name); exist {
 		col, _ = db.Collection(ctx, name)
@@ -114,3 +116,17 @@ func QueryDocument(query string, bindVars map[string]interface{}, result interfa
 func Drop() {
 	db.Remove(context.Background())
 }
+
+/*omelette-app:
+  build: ./
+  image: omelette-app
+  container_name: omelette-app
+  restart: unless-stopped
+  volumes:
+      - ./:/usr/src/app/
+  depends_on:
+      - omelette-db
+  environment:
+      ENV: development
+  ports:
+      - '3000:3000'*/
