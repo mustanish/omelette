@@ -16,7 +16,7 @@ COPY  ./ ./
 # Get compiledaemon to rebuild and restart the application
 RUN go get github.com/githubnemo/CompileDaemon
 
-# Expose port 8080 to the outside world
+# Expose port 3000 to the host machine
 EXPOSE 3000
 
 # Configure compiledaemon to rebuild and restart the application
