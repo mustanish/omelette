@@ -13,7 +13,7 @@ const OTPLength = 6
 const OTPTest = "000000"
 
 // OTPValidity represents validity of OTP in seconds equivalent to 3 minutes
-const OTPValidity = 180
+const OTPValidity = 300
 
 // OTPType represents types of OTP
 var OTPType = map[string]string{"email": "verifyEmail", "phone": "verifyPhone"}

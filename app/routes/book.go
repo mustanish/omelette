@@ -3,17 +3,16 @@ package routes
 import (
 	"github.com/go-chi/chi"
 	book "github.com/mustanish/omelette/app/controllers"
+	"github.com/mustanish/omelette/app/middlewares"
 )
 
 // Book is used to expose book specific routes
 func Book() *chi.Mux {
-	r := chi.NewRouter()
-	r.Post("/", book.AddBook)
-	r.Get("/all-books", book.AllBooks)
-	r.Route("/{id}", func(r chi.Router) {
-		r.Patch("/{id}", book.UpdateBook)
-		r.Get("/{id}", book.SingleBook)
-		r.Delete("/{id}", book.DeleteBook)
-	})
-	return r
+	router := chi.NewRouter()
+	router.With(middlewares.VerifyToken).With(middlewares.Validate).Post("/", book.AddBook)
+	router.With(middlewares.VerifyToken).With(middlewares.Validate).Patch("/{id}", book.UpdateBook)
+	router.With(middlewares.VerifyToken).Delete("/{id}", book.DeleteBook)
+	router.With(middlewares.VerifyToken).Get("/{id}", book.SingleBook)
+	router.With(middlewares.VerifyToken).Get("/all", book.AllBooks)
+	return router
 }

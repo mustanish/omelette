@@ -9,7 +9,7 @@ import (
 // User is used to expose user specific routes
 func User() *chi.Mux {
 	router := chi.NewRouter()
-	router.With(middlewares.VerifyToken).With(middlewares.ValidateBody).Patch("/", user.UpdateUser)
+	router.With(middlewares.VerifyToken).With(middlewares.Validate).Patch("/", user.UpdateUser)
 	router.With(middlewares.VerifyToken).Get("/", user.GetUser)
 	return router
 }

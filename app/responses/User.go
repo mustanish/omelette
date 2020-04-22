@@ -2,6 +2,7 @@ package responses
 
 // User act as user response
 type User struct {
+	ID          string `json:"id,omitempty"`
 	Name        string `json:"name,omitempty"`
 	UserName    string `json:"userName,omitempty"`
 	Email       string `json:"email,omitempty"`

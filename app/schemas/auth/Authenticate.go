@@ -1,4 +1,4 @@
-package userschemas
+package authschemas
 
 import "github.com/mustanish/omelette/app/constants"
 
@@ -8,17 +8,17 @@ type Authenticate struct {
 }
 
 var (
-	authenticate      Authenticate
 	authenticateRules = map[string][]string{
 		"identity": {"required", "regex:^" + constants.EmailRegex + "|" + constants.MobileRegex + "*$"},
 	}
+	authenticateCheck    = []string{"body"}
 	authenticateMessages = map[string][]string{
 		"identity": {"required:" + constants.IdentityRequired, "regex:" + constants.IdentityRegex},
 	}
 	// AuthenticateOpts represents validation options for middleware
 	AuthenticateOpts = map[string]interface{}{
-		"data":     &authenticate,
 		"messages": authenticateMessages,
 		"rules":    authenticateRules,
+		"check":    authenticateCheck,
 	}
 )

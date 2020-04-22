@@ -3,7 +3,9 @@ package helpers
 import (
 	"crypto/rand"
 	"io"
+	"net/http"
 	"os"
+	"reflect"
 	"strings"
 	"time"
 
@@ -70,7 +72,7 @@ func MaskNumber(number string) string {
 // GenerateOTP generates an OTP to verify email/phone
 func GenerateOTP(length int) string {
 	activeProfile := os.Getenv("ENV")
-	if activeProfile == "testing" {
+	if activeProfile == "testing" || activeProfile == "development" {
 		return constants.OTPTest
 	}
 	table := [...]byte{'1', '2', '3', '4', '5', '6', '7', '8', '9', '0'}
@@ -90,4 +92,23 @@ func SendEmail() {
 // sendSms sends sms to the provided phone number
 func sendSms() {
 
+}
+
+// InArray Checks if a value exists within a slice
+func InArray(needle interface{}, haystack interface{}) bool {
+	if reflect.TypeOf(haystack).Kind() == reflect.Slice {
+		j := reflect.ValueOf(haystack)
+		for i := 0; i < j.Len(); i++ {
+			if reflect.DeepEqual(needle, j.Index(i).Interface()) == true {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// QueryParam returns query string from current request
+func QueryParam(req *http.Request, key string) string {
+	query := req.URL.Query()
+	return query.Get(key)
 }

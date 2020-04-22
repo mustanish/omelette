@@ -1,6 +1,9 @@
 package repository
 
 import (
+	"log"
+
+	"github.com/arangodb/go-driver"
 	"github.com/mustanish/omelette/app/connectors"
 	"github.com/mustanish/omelette/app/models"
 )
@@ -37,9 +40,16 @@ func (u *User) Exist(identity string) (string, error) {
 		bindVars = map[string]interface{}{"identity": identity}
 	)
 	connectors.OpenCollection("users")
-	docKey, err := connectors.QueryDocument(query, bindVars, u)
-	if err != nil {
-		return docKey, err
+	cursor := connectors.QueryDocument(query, bindVars)
+	for {
+		meta, err := cursor.ReadDocument(nil, &u)
+		if driver.IsNoMoreDocuments(err) {
+			break
+		} else if err != nil {
+			log.Println("FAILED::could not read user document because of", err.Error())
+		} else {
+			docKey = meta.Key
+		}
 	}
 	return docKey, nil
 }

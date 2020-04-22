@@ -29,19 +29,11 @@ func (t *Token) RemoveToken(docKey string) error {
 }
 
 // Exist checks if token exist in database or not
-func Exist(key string) (bool, error) {
-	var (
-		docKey   string
-		query    = "FOR t IN tokens FILTER t._key == @key return t"
-		bindVars = map[string]interface{}{"key": key}
-	)
+func Exist(docKey string) (bool, error) {
 	connectors.OpenCollection("tokens")
-	docKey, err := connectors.QueryDocument(query, bindVars, nil)
+	_, err := connectors.ReadDocument(docKey, nil)
 	if err != nil {
 		return false, err
 	}
-	if len(docKey) > 0 {
-		return true, nil
-	}
-	return false, nil
+	return true, nil
 }

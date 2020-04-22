@@ -1,4 +1,4 @@
-package userschemas
+package authschemas
 
 import "github.com/mustanish/omelette/app/constants"
 
@@ -8,18 +8,17 @@ type Login struct {
 }
 
 var (
-	login Login
-
 	loginRules = map[string][]string{
 		"otp": {"required", "digits:6"},
 	}
+	loginCheck    = []string{"body"}
 	loginMessages = map[string][]string{
 		"otp": {"required:" + constants.OTPRequired, "len:" + constants.OTPMaxLen},
 	}
 	// LoginOpts represents validation options for middleware
 	LoginOpts = map[string]interface{}{
-		"data":     &login,
 		"messages": loginMessages,
 		"rules":    loginRules,
+		"check":    loginCheck,
 	}
 )

@@ -12,35 +12,38 @@ import (
 	"github.com/thedevsaddam/govalidator"
 )
 
-// ValidateBody validates request body
-func ValidateBody(next http.Handler) http.Handler {
+// Validate validates the current request
+func Validate(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
 		var (
 			route  = strings.TrimSuffix(req.URL.String(), "/")
-			method = req.Method
+			method = strings.ToLower(req.Method)
 		)
-		if value, exist := schemas.Schema[route+":"+method]; exist {
+		opts, data := schemas.MapOpts(req, route, method)
+		if opts != nil && data != nil {
 			var (
-				schema   = value.(map[string]interface{})
+				opts     = opts.(map[string]interface{})
 				rules    = govalidator.MapData{}
 				messages = govalidator.MapData{}
 			)
-
-			for key, value := range schema["rules"].(map[string][]string) {
-				rules[key] = value
+			if opts["rules"] != nil {
+				for key, value := range opts["rules"].(map[string][]string) {
+					rules[key] = value
+				}
 			}
-
-			for key, value := range schema["messages"].(map[string][]string) {
-				messages[key] = value
+			if opts["messages"] != nil {
+				for key, value := range opts["messages"].(map[string][]string) {
+					messages[key] = value
+				}
 			}
 			var (
-				opts = govalidator.Options{
-					Data:     schema["data"],
+				options = govalidator.Options{
+					Data:     data,
 					Request:  req,
 					Rules:    rules,
 					Messages: messages,
 				}
-				err = govalidator.New(opts).ValidateJSON()
+				err = govalidator.New(options).ValidateJSON()
 			)
 			if len(err) > 0 {
 				if _, exist := err["_error"]; exist {
@@ -50,15 +53,8 @@ func ValidateBody(next http.Handler) http.Handler {
 				}
 				return
 			}
-			ctx := context.WithValue(req.Context(), "data", schema["data"])
+			ctx := context.WithValue(req.Context(), "data", data)
 			next.ServeHTTP(res, req.WithContext(ctx))
 		}
-	})
-}
-
-// ValidateHeader validates request headers, params, query
-func ValidateHeader(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
-		next.ServeHTTP(res, req)
 	})
 }

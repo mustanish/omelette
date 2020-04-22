@@ -10,7 +10,7 @@ import (
 	"github.com/mustanish/omelette/app/constants"
 	"github.com/mustanish/omelette/app/responses"
 	"github.com/mustanish/omelette/app/routes"
-	userschemas "github.com/mustanish/omelette/app/schemas/user"
+	authschemas "github.com/mustanish/omelette/app/schemas/auth"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"syreclabs.com/go/faker"
@@ -20,7 +20,7 @@ var _ = Describe("Auth APIs", func() {
 	var error responses.HTTPError
 	var success responses.HTTPSucess
 	Describe("POST /auth", func() {
-		var data userschemas.Authenticate
+		var data authschemas.Authenticate
 
 		Context("when no identity is passed", func() {
 			It("should fail, when neither email nor phone number is passed", func() {
@@ -71,7 +71,7 @@ var _ = Describe("Auth APIs", func() {
 		})
 
 		Context("when identity passed is of the correct format", func() {
-			It("should pass, when when passed email is of the wrong format", func() {
+			It("should pass, when when passed email is of the correct format", func() {
 				data.Identity = faker.Internet().Email()
 				data, _ := json.Marshal(data)
 				req, _ := http.NewRequest("POST", "/auth", bytes.NewBuffer(data))
@@ -86,7 +86,7 @@ var _ = Describe("Auth APIs", func() {
 				Expect(success.Data).ShouldNot(BeEmpty())
 			})
 
-			It("should pass, when when passed phone number is of the wrong format", func() {
+			It("should pass, when when passed phone number is of the correct format", func() {
 				data.Identity = faker.Number().Number(10)
 				data, _ := json.Marshal(data)
 				req, _ := http.NewRequest("POST", "/auth", bytes.NewBuffer(data))
@@ -106,7 +106,7 @@ var _ = Describe("Auth APIs", func() {
 	})
 
 	Describe("POST /login", func() {
-		var data userschemas.Login
+		var data authschemas.Login
 		Context("when no access token or wrong access token is passed", func() {
 			It("should fail, when no access token is passed", func() {
 				data.OTP = constants.OTPTest
