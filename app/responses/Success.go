@@ -2,9 +2,9 @@ package responses
 
 import (
 	"net/http"
+	"omelette/app/constants"
 
 	"github.com/go-chi/render"
-	"github.com/mustanish/omelette/app/constants"
 )
 
 // HTTPSucess represents a success that occurred while handling a request.

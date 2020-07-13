@@ -1,4 +1,4 @@
-package models
+package model
 
 // Token act as model for database
 type Token struct {

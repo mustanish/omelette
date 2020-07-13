@@ -3,11 +3,11 @@ package connectors
 import (
 	"context"
 	"log"
+	"omelette/config"
 	"os"
 
 	"github.com/arangodb/go-driver"
 	"github.com/arangodb/go-driver/http"
-	"github.com/mustanish/omelette/app/config"
 )
 
 var (
@@ -37,19 +37,13 @@ func Initialize(config *config.Config) {
 	createIndexes()
 }
 
-// OpenCollection opens a collection within the database
-func OpenCollection(name string) {
-	var ctx = context.Background()
-	if exist, _ := db.CollectionExists(ctx, name); exist {
-		col, _ = db.Collection(ctx, name)
-	} else {
-		col, _ = db.CreateCollection(ctx, name, nil)
-	}
-}
-
 // CreateDocument creates a single document in the collection
-func CreateDocument(document interface{}) (string, error) {
-	var ctx = driver.WithReturnNew(context.Background(), &document)
+func CreateDocument(collection string, document interface{}) (string, error) {
+	err := openCollection(collection)
+	if err != nil {
+		return "", err
+	}
+	ctx := driver.WithReturnNew(context.Background(), &document)
 	meta, err := col.CreateDocument(ctx, document)
 	if err != nil {
 		log.Println("FAILED::could not create document because of", err.Error())
@@ -59,9 +53,13 @@ func CreateDocument(document interface{}) (string, error) {
 }
 
 // UpdateDocument updates a single document in the collection based on key passed
-func UpdateDocument(key string, document interface{}) (string, error) {
-	var ctx = driver.WithReturnNew(context.Background(), &document)
-	meta, err := col.UpdateDocument(ctx, key, &document)
+func UpdateDocument(collection string, key string, document interface{}) (string, error) {
+	err := openCollection(collection)
+	if err != nil {
+		return "", err
+	}
+	ctx := driver.WithReturnNew(context.Background(), &document)
+	meta, err := col.UpdateDocument(ctx, key, document)
 	if err != nil {
 		log.Println("FAILED::could not update document because of", err.Error())
 		return "", err
@@ -70,8 +68,13 @@ func UpdateDocument(key string, document interface{}) (string, error) {
 }
 
 // ReadDocument reads a single document from the collection based on key passed
-func ReadDocument(key string, result interface{}) (string, error) {
-	meta, err := col.ReadDocument(nil, key, nil)
+func ReadDocument(collection string, key string, result interface{}) (string, error) {
+	err := openCollection(collection)
+	if err != nil {
+		return "", err
+	}
+	ctx := context.Background()
+	meta, err := col.ReadDocument(ctx, key, result)
 	if err != nil {
 		log.Println("FAILED::could not read document because of", err.Error())
 		return "", err
@@ -80,8 +83,13 @@ func ReadDocument(key string, result interface{}) (string, error) {
 }
 
 // RemoveDocument remove a single document from the collection based on key passed
-func RemoveDocument(key string) (string, error) {
-	meta, err := col.RemoveDocument(nil, key)
+func RemoveDocument(collection string, key string) (string, error) {
+	err := openCollection(collection)
+	if err != nil {
+		return "", err
+	}
+	ctx := context.Background()
+	meta, err := col.RemoveDocument(ctx, key)
 	if err != nil {
 		log.Println("FAILED::could not remove document because of", err.Error())
 		return "", err
@@ -90,16 +98,11 @@ func RemoveDocument(key string) (string, error) {
 }
 
 // QueryDocument runs query and returns a cursor to iterate over the returned document
-func QueryDocument(query string, bindVars map[string]interface{}) driver.Cursor {
-	if len(bindVars) == 0 {
-		bindVars = nil
-	}
-	cursor, err := db.Query(nil, query, bindVars)
-	if err != nil {
-		log.Println("FAILED::could not query document because of", err.Error())
-	}
+func QueryDocument(query string, bindVars map[string]interface{}) (driver.Cursor, error) {
+	ctx := driver.WithQueryCount(context.Background())
+	cursor, err := db.Query(ctx, query, bindVars)
 	defer cursor.Close()
-	return cursor
+	return cursor, err
 }
 
 // Drop removes database
@@ -107,12 +110,35 @@ func Drop() {
 	db.Remove(context.Background())
 }
 
+func openCollection(name string) error {
+	ctx := context.Background()
+	exist, err := db.CollectionExists(ctx, name)
+	if err != nil {
+		log.Println("FAILED::could not check if collection exist because of ", err.Error())
+		return err
+	}
+	if exist {
+		col, err = db.Collection(ctx, name)
+		if err != nil {
+			log.Println("FAILED::could open collection because of ", err.Error())
+			return err
+		}
+	} else {
+		col, err = db.CreateCollection(ctx, name, nil)
+		if err != nil {
+			log.Println("FAILED::could not create collection because of ", err.Error())
+			return err
+		}
+	}
+	return nil
+}
+
 func createIndexes() {
 	var (
 		ctx = context.Background()
 	)
 	for key, value := range index {
-		OpenCollection(key)
+		openCollection(key)
 		for _, inValue := range value.([]map[string]interface{}) {
 			switch inValue["type"] {
 			case "ttl":

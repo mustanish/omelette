@@ -4,14 +4,14 @@ import (
 	"crypto/rand"
 	"io"
 	"net/http"
+	"omelette/app/connectors"
+	"omelette/app/constants"
 	"os"
 	"reflect"
 	"strings"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/mustanish/omelette/app/constants"
-	tokens "github.com/mustanish/omelette/app/repository"
 	uuid "github.com/satori/go.uuid"
 )
 
@@ -51,8 +51,8 @@ func VerifyToken(token string) (string, string, bool) {
 	decoded, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
 		return []byte(constants.Jwtsecret), nil
 	})
-	exist, _ := tokens.Exist(claims.TokenID)
-	if err != nil || !decoded.Valid || !exist {
+	docKey, _ := connectors.ReadDocument("tokens", claims.TokenID, nil)
+	if err != nil || !decoded.Valid || len(docKey) == 0 {
 		return userID, tokenID, false
 	}
 	return claims.Id, claims.TokenID, true

@@ -1,12 +1,12 @@
 package tests_test
 
 import (
+	"omelette/app/connectors"
+	"omelette/app/routes"
+	"omelette/config"
 	"os"
 	"testing"
 
-	"github.com/mustanish/omelette/app/config"
-	"github.com/mustanish/omelette/app/connectors"
-	"github.com/mustanish/omelette/app/routes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )

@@ -1,6 +1,6 @@
-package authschemas
+package validation
 
-import "github.com/mustanish/omelette/app/constants"
+import "omelette/app/constants"
 
 // Login maps /login route
 type Login struct {

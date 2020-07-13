@@ -3,12 +3,12 @@ package middlewares
 import (
 	"context"
 	"net/http"
+	"omelette/app/constants"
+	"omelette/app/responses"
+	"omelette/app/schemas"
 	"strings"
 
 	"github.com/go-chi/render"
-	"github.com/mustanish/omelette/app/constants"
-	"github.com/mustanish/omelette/app/responses"
-	"github.com/mustanish/omelette/app/schemas"
 	"github.com/thedevsaddam/govalidator"
 )
 

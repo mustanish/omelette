@@ -1,11 +1,12 @@
 package routes
 
 import (
+	"omelette/app/responses"
+
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
 	"github.com/go-chi/render"
-	"github.com/mustanish/omelette/app/responses"
 )
 
 var router = chi.NewRouter()

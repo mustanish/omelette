@@ -3,12 +3,12 @@ package middlewares
 import (
 	"context"
 	"net/http"
+	"omelette/app/constants"
+	"omelette/app/responses"
+	"omelette/helpers"
 	"strings"
 
 	"github.com/go-chi/render"
-	"github.com/mustanish/omelette/app/constants"
-	"github.com/mustanish/omelette/app/helpers"
-	"github.com/mustanish/omelette/app/responses"
 )
 
 // VerifyToken verifies user token

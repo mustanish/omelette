@@ -2,9 +2,9 @@ package responses
 
 import (
 	"net/http"
+	"omelette/app/constants"
 
 	"github.com/go-chi/render"
-	"github.com/mustanish/omelette/app/constants"
 )
 
 // HTTPError represents an error that occurred while handling a request.

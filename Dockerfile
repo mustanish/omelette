@@ -20,7 +20,7 @@ RUN go get github.com/githubnemo/CompileDaemon
 EXPOSE 3000
 
 # Configure compiledaemon to rebuild and restart the application
-CMD CompileDaemon --build="go build server.go" --command=./server
+CMD CompileDaemon --build="go build omelette.go" --command=./omelette
 
 
 

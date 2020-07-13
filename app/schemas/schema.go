@@ -2,21 +2,19 @@ package schemas
 
 import (
 	"net/http"
+	"omelette/app/schemas/validation"
 
 	"github.com/go-chi/chi"
-	authschemas "github.com/mustanish/omelette/app/schemas/auth"
-	bookschemas "github.com/mustanish/omelette/app/schemas/book"
-	userschemas "github.com/mustanish/omelette/app/schemas/user"
 )
 
 //MapOpts is maps requested URL with corresponding validation options
 func MapOpts(req *http.Request, route string, method string) (interface{}, interface{}) {
 	schema := map[string]interface{}{
-		"/auth:post":  authschemas.AuthenticateOpts,
-		"/login:post": authschemas.LoginOpts,
-		"/user:patch": userschemas.UpdateUserOpts,
-		"/book:post":  bookschemas.AddBookOpts,
-		"/book/" + chi.URLParam(req, "id") + ":patch": bookschemas.UpdateBookOpts,
+		"/auth:post":  validation.AuthenticateOpts,
+		"/login:post": validation.LoginOpts,
+		"/user:patch": validation.UpdateUserOpts,
+		"/book:post":  validation.AddBookOpts,
+		"/book/" + chi.URLParam(req, "id") + ":patch": validation.UpdateBookOpts,
 	}
 	options, exist := schema[route+":"+method]
 	if exist {
@@ -29,15 +27,15 @@ func MapOpts(req *http.Request, route string, method string) (interface{}, inter
 func mapReqStruct(req *http.Request, route string, method string) interface{} {
 	switch route + ":" + method {
 	case "/auth:post":
-		return new(authschemas.Authenticate)
+		return new(validation.Authenticate)
 	case "/login:post":
-		return new(authschemas.Login)
+		return new(validation.Login)
 	case "/user:patch":
-		return new(userschemas.UpdateUser)
+		return new(validation.UpdateUser)
 	case "/book:post":
-		return new(bookschemas.AddBook)
+		return new(validation.AddBook)
 	case "/book/" + chi.URLParam(req, "id") + ":patch":
-		return new(bookschemas.UpdateBook)
+		return new(validation.UpdateBook)
 	}
 	return nil
 }

@@ -1,6 +1,6 @@
-package userschemas
+package validation
 
-import "github.com/mustanish/omelette/app/constants"
+import "omelette/app/constants"
 
 // UpdateUser maps /user route to update profile
 type UpdateUser struct {

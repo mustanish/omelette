@@ -1,4 +1,4 @@
-package models
+package model
 
 // Book act as model for database
 type Book struct {

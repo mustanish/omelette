@@ -1,4 +1,4 @@
-package bookschemas
+package validation
 
 // UpdateBook maps /book/{id} route to update an existing book
 type UpdateBook struct {

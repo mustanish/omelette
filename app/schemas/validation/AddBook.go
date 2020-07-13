@@ -1,4 +1,4 @@
-package bookschemas
+package validation
 
 // AddBook maps /book route to add new book
 type AddBook struct {

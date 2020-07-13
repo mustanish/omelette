@@ -1,4 +1,4 @@
-package models
+package model
 
 // User act as model for database
 type User struct {
@@ -9,9 +9,9 @@ type User struct {
 	Phone       string `json:"phone,omitempty"`
 	PhoneVerify int64  `json:"phoneVerify,omitempty"`
 	DOB         string `json:"dob,omitempty"`
-	OTP         string `json:"otp,omitempty"`
-	OtpType     string `json:"otpType,omitempty"`
-	OtpValidity int64  `json:"otpValidity,omitempty"`
+	OTP         string `json:"otp"`
+	OtpType     string `json:"otpType"`
+	OtpValidity int64  `json:"otpValidity"`
 	LastLogedIn int64  `json:"lastLoggedIn,omitempty"`
 	CreatedAt   int64  `json:"createdAt,omitempty"`
 	UpdatedAt   int64  `json:"updatedAt,omitempty"`

@@ -6,11 +6,11 @@ import (
 	"log"
 	"net/http"
 	"net/http/httptest"
+	"omelette/app/constants"
+	"omelette/app/responses"
+	"omelette/app/routes"
+	"omelette/app/schemas/validation"
 
-	"github.com/mustanish/omelette/app/constants"
-	"github.com/mustanish/omelette/app/responses"
-	"github.com/mustanish/omelette/app/routes"
-	authschemas "github.com/mustanish/omelette/app/schemas/auth"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"syreclabs.com/go/faker"
@@ -20,7 +20,7 @@ var _ = Describe("Auth APIs", func() {
 	var error responses.HTTPError
 	var success responses.HTTPSucess
 	Describe("POST /auth", func() {
-		var data authschemas.Authenticate
+		var data validation.Authenticate
 
 		Context("when no identity is passed", func() {
 			It("should fail, when neither email nor phone number is passed", func() {
@@ -106,7 +106,7 @@ var _ = Describe("Auth APIs", func() {
 	})
 
 	Describe("POST /login", func() {
-		var data authschemas.Login
+		var data validation.Login
 		Context("when no access token or wrong access token is passed", func() {
 			It("should fail, when no access token is passed", func() {
 				data.OTP = constants.OTPTest
