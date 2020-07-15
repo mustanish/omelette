@@ -31,7 +31,7 @@ The directory structure of the application:
 
     helpers/          Helper functions can be written
 
-    tests/            Test suites
+    tests/            Test cases can be written here
 
 ## Available routes
 
