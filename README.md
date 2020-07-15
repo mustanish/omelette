@@ -16,7 +16,7 @@ Contains basic CRUD operations, middlewares, test cases and schema validation.
 
 ## Code Layout
 
-The directory structure of a generated Revel application:
+The directory structure of the application:
 
     app/              App sources
         handlers/     App handlers go here
@@ -24,7 +24,7 @@ The directory structure of a generated Revel application:
         middlewares/  App middlewares go here
         responses/    App responses go here
         routes/       App routes go here
-        schemas/      App schemas go here
+        schemas/      App schemas go here(Validation and Database)
 
     config/           Configuration directory
         config.go     Main app configuration file
